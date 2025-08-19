@@ -29,6 +29,7 @@ import io.f1.backend.domain.game.dto.response.RoomSettingResponse;
 import io.f1.backend.domain.game.dto.response.SystemNoticeResponse;
 import io.f1.backend.domain.game.event.RoomCreatedEvent;
 import io.f1.backend.domain.game.event.RoomDeletedEvent;
+import io.f1.backend.domain.game.event.RoomUpdatedEvent;
 import io.f1.backend.domain.game.model.ConnectionState;
 import io.f1.backend.domain.game.model.GameSetting;
 import io.f1.backend.domain.game.model.Player;
@@ -105,7 +106,7 @@ public class RoomService {
                 host.getId(),
                 () -> exitIfInAnotherRoom(room, getCurrentUserPrincipal()));
 
-        eventPublisher.publishEvent(new RoomCreatedEvent(room, quiz));
+        eventPublisher.publishEvent(new RoomCreatedEvent(room, quiz, gameSetting.getRound()));
 
         return new RoomCreateResponse(newId);
     }
@@ -204,7 +205,10 @@ public class RoomService {
                                 Quiz quiz = quizService.getQuizWithQuestionsById(quizId);
 
                                 GameSettingResponse gameSettingResponse =
-                                        toGameSettingResponse(room.getGameSetting(), quiz);
+                                        toGameSettingResponse(
+                                                room.getGameSetting(),
+                                                quiz,
+                                                quiz.getQuestions().size());
 
                                 PlayerListResponse playerListResponse = toPlayerListResponse(room);
 
@@ -229,6 +233,10 @@ public class RoomService {
                                         destination,
                                         MessageType.SYSTEM_NOTICE,
                                         systemNoticeResponse);
+
+                                eventPublisher.publishEvent(
+                                        new RoomUpdatedEvent(
+                                                room, quiz, quiz.getQuestions().size()));
                             });
                 });
     }
@@ -283,9 +291,9 @@ public class RoomService {
                         .map(
                                 room -> {
                                     Long quizId = room.getGameSetting().getQuizId();
-                                    Quiz quiz = quizService.getQuizWithQuestionsById(quizId);
-
-                                    return toRoomResponse(room, quiz);
+                                    Quiz quiz = quizService.findQuizById(quizId);
+                                    Long questionsCount = quizService.getQuestionsCount(quizId);
+                                    return toRoomResponse(room, quiz, questionsCount);
                                 })
                         .toList();
         return new RoomListResponse(roomResponses);
@@ -329,10 +337,11 @@ public class RoomService {
 
             Long quizId = room.getGameSetting().getQuizId();
 
-            Quiz quiz = quizService.getQuizWithQuestionsById(quizId);
+            Quiz quiz = quizService.findQuizById(quizId);
+            Long questionsCount = quizService.getQuestionsCount(quizId);
 
             GameSettingResponse gameSettingResponse =
-                    toGameSettingResponse(room.getGameSetting(), quiz);
+                    toGameSettingResponse(room.getGameSetting(), quiz, questionsCount);
 
             PlayerListResponse playerListResponse = toPlayerListResponse(room);
 
@@ -470,6 +479,12 @@ public class RoomService {
 
         /* 플레이어 삭제 */
         room.removePlayer(player);
+
+        Long quizId = room.getQuizId();
+        Quiz quiz = quizService.findQuizById(quizId);
+        Long questionsCount = quizService.getQuestionsCount(quizId);
+
+        eventPublisher.publishEvent(new RoomUpdatedEvent(room, quiz, questionsCount));
     }
 
     public void handleDisconnectedPlayers(Room room, List<Player> disconnectedPlayers) {
