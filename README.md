@@ -460,3 +460,4 @@
 - 와이어프레임 : [와이어프레임 링크](https://www.figma.com/design/HEJVJjCZ9USRZvdWO8Ft6L/%EB%87%8C%ED%94%BC%EC%85%9C-%EA%B0%80%EC%A0%9C-?node-id=0-1&t=aGMTZdFnk1dle51L-1)
 - 프로젝트 기획서 : [프로젝트 기획서 링크](https://www.notion.so/248a7ca2e7b281538928cc49e3b20605?pvs=21)
 - 웹소켓 / SSE 명세서 : [웹 소켓 / SSE 명세서](https://www.notion.so/248a7ca2e7b2819cb463f307f163a742?pvs=21)
+- API 명세서 : [API 명세서](https://www.notion.so/API-248a7ca2e7b281888892f9f2d4e045fe?source=copy_link)
