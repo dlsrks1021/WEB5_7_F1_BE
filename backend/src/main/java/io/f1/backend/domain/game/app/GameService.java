@@ -77,19 +77,22 @@ public class GameService {
         validateRoomStart(room, principal);
 
         Long quizId = room.getGameSetting().getQuizId();
-        Quiz quiz = quizService.getQuizWithQuestionsById(quizId);
+        Quiz quiz = quizService.findQuizById(quizId);
+        Long questionsCount = quizService.getQuestionsCount(quizId);
         List<Question> questions = prepareQuestions(room, quiz);
 
         room.updateQuestions(questions);
         room.increaseCurrentRound();
         room.updateRoomState(RoomState.PLAYING);
 
-        eventPublisher.publishEvent(new RoomUpdatedEvent(room, quiz));
+        eventPublisher.publishEvent(new RoomUpdatedEvent(room, quiz, questionsCount));
 
         timerService.startTimer(room, START_DELAY);
 
         messageSender.sendBroadcast(
-                destination, MessageType.GAME_START, toGameStartResponse(questions));
+                destination,
+                MessageType.GAME_START,
+                toGameStartResponse(quiz.getQuizType(), questions));
         messageSender.sendBroadcast(
                 destination, MessageType.RANK_UPDATE, toRankUpdateResponse(room));
         messageSender.sendBroadcast(
@@ -210,7 +213,8 @@ public class GameService {
                 MessageType.GAME_SETTING,
                 toGameSettingResponse(
                         room.getGameSetting(),
-                        quizService.getQuizWithQuestionsById(room.getGameSetting().getQuizId())));
+                        quizService.findQuizById(room.getGameSetting().getQuizId()),
+                        room.getRound()));
         messageSender.sendBroadcast(
                 destination, MessageType.ROOM_SETTING, toRoomSettingResponse(room));
     }
@@ -315,10 +319,11 @@ public class GameService {
 
     private void broadcastGameSetting(Room room) {
         String destination = getDestination(room.getId());
-        Quiz quiz = quizService.getQuizWithQuestionsById(room.getGameSetting().getQuizId());
+        Quiz quiz = quizService.findQuizById(room.getGameSetting().getQuizId());
+        Long questionsCount = quizService.getQuestionsCount(quiz.getId());
         messageSender.sendBroadcast(
                 destination,
                 MessageType.GAME_SETTING,
-                toGameSettingResponse(room.getGameSetting(), quiz));
+                toGameSettingResponse(room.getGameSetting(), quiz, questionsCount));
     }
 }
