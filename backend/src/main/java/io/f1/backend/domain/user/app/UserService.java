@@ -2,6 +2,7 @@ package io.f1.backend.domain.user.app;
 
 import static io.f1.backend.domain.user.constants.SessionKeys.OAUTH_USER;
 import static io.f1.backend.domain.user.constants.SessionKeys.USER;
+
 import io.f1.backend.domain.auth.dto.CurrentUserAndAdminResponse;
 import io.f1.backend.domain.stat.dao.StatRepository;
 import io.f1.backend.domain.user.dao.UserRepository;
@@ -14,6 +15,7 @@ import io.f1.backend.global.exception.CustomException;
 import io.f1.backend.global.exception.errorcode.AuthErrorCode;
 import io.f1.backend.global.exception.errorcode.UserErrorCode;
 import io.f1.backend.global.security.util.SecurityUtils;
+
 import jakarta.servlet.http.HttpSession;
 
 import lombok.RequiredArgsConstructor;
