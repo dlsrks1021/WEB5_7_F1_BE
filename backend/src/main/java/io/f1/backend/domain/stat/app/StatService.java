@@ -36,20 +36,7 @@ public class StatService {
         return response;
     }
 
-    // TODO: 게임 종료 후 호출 필요
     public void updateRank(long userId, boolean win, int deltaScore) {
         statRepository.updateRank(userId, win, deltaScore);
-    }
-
-    public void addUser(long userId, String nickname) {
-        statRepository.addUser(userId, nickname);
-    }
-
-    public void removeUser(long userId) {
-        statRepository.removeUser(userId);
-    }
-
-    public void updateNickname(long userId, String newNickname) {
-        statRepository.updateNickname(userId, newNickname);
     }
 }
