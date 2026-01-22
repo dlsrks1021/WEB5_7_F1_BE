@@ -11,13 +11,7 @@ public interface StatRepository {
 
     StatPageResponse getRanksByNickname(String nickname, int pageSize);
 
-    void addUser(long userId, String nickname);
-
     void updateRank(long userId, boolean win, int deltaScore);
-
-    void updateNickname(long userId, String nickname);
-
-    void removeUser(long userId);
 
     MyPageInfo getMyPageByUserId(long userId);
 }

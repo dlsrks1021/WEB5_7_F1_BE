@@ -48,21 +48,6 @@ public class StatRepositoryAdapter implements StatRepository {
         }
     }
 
-    @Override
-    public void addUser(long userId, String nickname) {
-        // TODO: 서비스 분할 시 UserService로부터 받을 정보
-    }
-
-    @Override
-    public void updateNickname(long userId, String nickname) {
-        // TODO: 서비스 분할 시 UserService로부터 받을 정보
-    }
-
-    @Override
-    public void removeUser(long userId) {
-        // TODO: 서비스 분할 시 UserService로부터 받을 정보
-    }
-
     private Pageable getPageableFromNickname(String nickname, int pageSize) {
         long score =
                 jpaRepository
