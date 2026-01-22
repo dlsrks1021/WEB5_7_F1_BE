@@ -36,7 +36,6 @@ public class StatService {
         return response;
     }
 
-    // TODO: 게임 종료 후 호출 필요
     public void updateRank(long userId, boolean win, int deltaScore) {
         statRepository.updateRank(userId, win, deltaScore);
     }

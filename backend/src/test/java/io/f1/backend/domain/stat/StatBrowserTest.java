@@ -9,11 +9,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.github.database.rider.core.api.dataset.DataSet;
 
-import io.f1.backend.domain.stat.dao.StatRepositoryAdapter;
 import io.f1.backend.global.config.RedisTestContainerConfig;
 import io.f1.backend.global.template.BrowserTestTemplate;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,14 +25,6 @@ import org.springframework.test.web.servlet.ResultActions;
 public class StatBrowserTest extends BrowserTestTemplate {
 
     @Autowired RedisConnectionFactory redisConnectionFactory;
-
-    @Autowired private StatRepositoryAdapter repository;
-
-    @BeforeEach
-    void init() {
-        redisConnectionFactory.getConnection().serverCommands().flushAll();
-        repository.setup();
-    }
 
     @Test
     @DataSet("datasets/stat/one-user-stat.yml")

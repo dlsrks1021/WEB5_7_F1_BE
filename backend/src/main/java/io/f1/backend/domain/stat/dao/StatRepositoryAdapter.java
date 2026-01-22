@@ -26,21 +26,9 @@ import org.springframework.stereotype.Repository;
 public class StatRepositoryAdapter implements StatRepository {
 
     private final StatJpaRepository jpaRepository;
-    private final StatRedisRepository redisRepository;
-
-    public void setup() {
-        redisRepository.setup();
-        warmingRedis();
-    }
 
     @Override
     public StatPageResponse getRanks(Pageable pageable) {
-        try {
-            return redisRepository.findAllStatsWithUser(pageable);
-        } catch (NullPointerException e) {
-            log.error("Cache miss fall back to MySQL", e);
-        }
-
         Page<StatWithNickname> stats = jpaRepository.findAllStatsWithUser(pageable);
         return toStatListPageResponse(stats);
     }
@@ -52,13 +40,7 @@ public class StatRepositoryAdapter implements StatRepository {
     }
 
     @Override
-    public void addUser(long userId, String nickname) {
-        redisRepository.initialize(new StatWithUserSummary(userId, nickname, 0, 0, 0));
-    }
-
-    @Override
     public void updateRank(long userId, boolean win, int deltaScore) {
-        redisRepository.updateRank(userId, win, deltaScore);
         if (win) {
             jpaRepository.updateStatByUserIdCaseWin(deltaScore, userId);
         } else {
@@ -67,25 +49,21 @@ public class StatRepositoryAdapter implements StatRepository {
     }
 
     @Override
+    public void addUser(long userId, String nickname) {
+        // TODO: 서비스 분할 시 UserService로부터 받을 정보
+    }
+
+    @Override
     public void updateNickname(long userId, String nickname) {
-        redisRepository.updateNickname(userId, nickname);
+        // TODO: 서비스 분할 시 UserService로부터 받을 정보
     }
 
     @Override
     public void removeUser(long userId) {
-        redisRepository.removeUser(userId);
-    }
-
-    private void warmingRedis() {
-        jpaRepository.findAllStatWithUserSummary().forEach(redisRepository::initialize);
+        // TODO: 서비스 분할 시 UserService로부터 받을 정보
     }
 
     private Pageable getPageableFromNickname(String nickname, int pageSize) {
-        try {
-            return redisRepository.getPageableFromNickname(nickname, pageSize);
-        } catch (NullPointerException e) {
-            log.error("Cache miss fall back to MySQL", e);
-        }
         long score =
                 jpaRepository
                         .findScoreByNickname(nickname)
@@ -99,12 +77,6 @@ public class StatRepositoryAdapter implements StatRepository {
 
     @Override
     public MyPageInfo getMyPageByUserId(long userId) {
-        try {
-            return redisRepository.getStatByUserId(userId);
-        } catch (Exception e) {
-            log.error("Redis miss, fallback to MySQL for userId={}", userId, e);
-        }
-
         StatWithUserSummary stat = findStatByUserId(userId);
         long rank = jpaRepository.countByScoreGreaterThan(stat.score()) + 1;
 
