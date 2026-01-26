@@ -1,0 +1,27 @@
+plugins {
+    id 'java-library'
+    id 'com.github.davidmc24.gradle.plugin.avro'
+}
+
+dependencies {
+    api 'org.apache.avro:avro:1.12.1'
+}
+
+def avro_generated = "$buildDir/generated-sources/avro"
+
+sourceSets {
+    main {
+        java {
+            srcDirs += avro_generated
+        }
+    }
+}
+
+tasks.generateAvroJava {
+    source ("avro")
+    outputDir = file(avro_generated)
+}
+
+tasks.named('compileJava') {
+    dependsOn generateAvroJava
+}

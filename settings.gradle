@@ -1,0 +1,6 @@
+
+rootProject.name = 'brainrace'
+
+include 'backend'
+include 'consumers:stat-consumer'
+include 'events:event-stat'

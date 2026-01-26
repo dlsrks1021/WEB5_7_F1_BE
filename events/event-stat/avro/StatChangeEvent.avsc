@@ -1,0 +1,10 @@
+{
+  "type": "record",
+  "name": "StatChangeEvent",
+  "namespace": "io.f1.events",
+  "fields": [
+    {"name": "userId", "type": "long"},
+    {"name": "win", "type": "boolean"},
+    {"name": "deltaScore", "type": "int"}
+  ]
+}
