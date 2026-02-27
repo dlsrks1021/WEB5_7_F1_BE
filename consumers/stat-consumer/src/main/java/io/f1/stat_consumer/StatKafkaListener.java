@@ -1,18 +1,19 @@
 package io.f1.stat_consumer;
 
-import java.util.List;
+import io.f1.events.StatChangeEvent;
+
+import lombok.RequiredArgsConstructor;
 
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import io.f1.events.StatChangeEvent;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
 public class StatKafkaListener {
-    
+
     private final StatRepository repository;
 
     @Transactional
