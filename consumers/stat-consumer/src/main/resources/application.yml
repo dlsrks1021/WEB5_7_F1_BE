@@ -1,0 +1,24 @@
+spring:
+    datasource:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: ${DB_URL}
+        username: ${DB_USERNAME}
+        password: ${DB_PASSWORD}
+        hikari:
+            data-source-properties:
+                rewriteBatchedStatements: true
+
+    kafka:
+        bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+        properties:
+            schema.registry.url: ${KAFKA_SCHEMA_REGISTRY_URL}
+            specific.avro.reader: true
+        consumer:
+            group-id: stat-consumer-group
+            key-deserializer: org.apache.kafka.common.serialization.StringSerializer
+            value-deserializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+            enable-auto-commit: false
+            max-poll-records: 100
+        listener:
+            type: batch
+            ack-mode: batch

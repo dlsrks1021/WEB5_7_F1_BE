@@ -24,10 +24,11 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
-	/* DATABASE */
+	/* DB & Messaging */
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	implementation 'org.flywaydb:flyway-mysql'
 	implementation 'org.flywaydb:flyway-core'
+	implementation 'org.springframework.kafka:spring-kafka'
 
 	/* MONITORING */
 	implementation 'io.micrometer:micrometer-registry-prometheus'
@@ -42,6 +43,7 @@ dependencies {
 	testImplementation 'com.github.database-rider:rider-spring:1.44.0'
 	testImplementation 'org.testcontainers:junit-jupiter'
 	testImplementation "com.redis:testcontainers-redis:2.2.4"
+	testImplementation 'org.testcontainers:kafka:1.21.4'
 
 	/* ETC */
 	implementation 'org.apache.commons:commons-lang3:3.12.0'

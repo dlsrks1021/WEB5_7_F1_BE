@@ -4,20 +4,27 @@ import io.f1.backend.domain.stat.dao.StatRepository;
 import io.f1.backend.domain.stat.dto.StatPageResponse;
 import io.f1.backend.global.exception.CustomException;
 import io.f1.backend.global.exception.errorcode.RoomErrorCode;
-
+import io.f1.events.StatChangeEvent;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.concurrent.CompletableFuture;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Pageable;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class StatService {
 
     private final StatRepository statRepository;
+    private final KafkaTemplate<String, StatChangeEvent> kafkaTemplate;
 
     @Transactional(readOnly = true)
     public StatPageResponse getRanks(Pageable pageable, String nickname) {
@@ -37,6 +44,20 @@ public class StatService {
     }
 
     public void updateRank(long userId, boolean win, int deltaScore) {
-        statRepository.updateRank(userId, win, deltaScore);
+        StatChangeEvent event = StatChangeEvent.newBuilder()
+        .setUserId(userId)
+        .setWin(win)
+        .setDeltaScore(deltaScore)
+        .build();
+
+        CompletableFuture<SendResult<String, StatChangeEvent>> future = kafkaTemplate.send("stat-changes", event);
+        
+        future.whenComplete((result, ex) -> {
+            if (ex != null) {
+                StatChangeEvent failedEvent = result.getProducerRecord().value();
+                log.error("Failed to send stat-changes: userId:{} win:{} score:{}",
+                        failedEvent.getUserId(), failedEvent.getWin(), failedEvent.getDeltaScore());
+            }
+        });
     }
 }

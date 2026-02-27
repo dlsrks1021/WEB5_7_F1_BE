@@ -39,15 +39,6 @@ public class StatRepositoryAdapter implements StatRepository {
         return getRanks(pageable);
     }
 
-    @Override
-    public void updateRank(long userId, boolean win, int deltaScore) {
-        if (win) {
-            jpaRepository.updateStatByUserIdCaseWin(deltaScore, userId);
-        } else {
-            jpaRepository.updateStatByUserIdCaseLose(deltaScore, userId);
-        }
-    }
-
     private Pageable getPageableFromNickname(String nickname, int pageSize) {
         long score =
                 jpaRepository

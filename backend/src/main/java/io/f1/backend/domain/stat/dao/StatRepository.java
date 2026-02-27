@@ -11,7 +11,5 @@ public interface StatRepository {
 
     StatPageResponse getRanksByNickname(String nickname, int pageSize);
 
-    void updateRank(long userId, boolean win, int deltaScore);
-
     MyPageInfo getMyPageByUserId(long userId);
 }
